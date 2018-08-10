@@ -1,0 +1,15 @@
+{
+  "include": [
+    "src/*.ts",
+    "test/*.ts"
+  ],
+  "compilerOptions": {
+    "module": "commonjs",
+    "removeComments": false,
+    "target": "ES6",
+    "types": [
+      "mocha",
+      "node"
+    ]
+  }
+}

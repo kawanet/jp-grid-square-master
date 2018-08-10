@@ -1,0 +1,40 @@
+{
+  "name": "jp-grid-square-master",
+  "description": "Japan Basic Grid Square Master CSV Data Parser",
+  "version": "0.1.1",
+  "bugs": {
+    "url": "https://github.com/kawanet/jp-grid-square-master/issues"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "iconv-lite": "^0.4.23",
+    "promisen": "^0.1.1"
+  },
+  "devDependencies": {
+    "@types/mocha": "^5.2.5",
+    "@types/node": "^10.5.7",
+    "mocha": "^5.2.0",
+    "typescript": "^3.0.1"
+  },
+  "homepage": "https://github.com/kawanet/jp-grid-square-master#readme",
+  "keywords": [
+    "JIS-X-0402",
+    "geo",
+    "geocoding",
+    "grid"
+  ],
+  "license": "MIT",
+  "main": "./src/jp-grid-square-master.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kawanet/jp-grid-square-master.git"
+  },
+  "scripts": {
+    "fixpack": "fixpack",
+    "test": "./node_modules/.bin/mocha test",
+    "tsc": "./node_modules/.bin/tsc",
+    "tsc-declaration": "./node_modules/.bin/tsc --declaration --emitDeclarationOnly --outDir typings src/jp-grid-square-master.ts",
+    "tsc-watch": "./node_modules/.bin/tsc --watch"
+  },
+  "typings": "typings/jp-grid-square-master.d.ts"
+}
