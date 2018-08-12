@@ -1,11 +1,18 @@
 "use strict";
 // parser.ts
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = require("axios");
 const fs = require("fs");
 const iconv = require("iconv-lite");
 const promisen = require("promisen");
-const os_1 = require("os");
 const ENDPOINT = "http://www.stat.go.jp/data/mesh/csv/";
 const CSV_SUFFIX = ".csv";
 const NAMES = [
@@ -19,100 +26,82 @@ const readFile = promisen.denodeify(fs.readFile.bind(fs));
 const writeFile = promisen.denodeify(fs.writeFile.bind(fs));
 const access = promisen.denodeify(fs.access.bind(fs));
 const mkdir = promisen.denodeify(fs.mkdir.bind(fs));
-const PKG_NAME = require("../package.json").name;
-const TEMP_DIR = os_1.tmpdir() + "/" + PKG_NAME;
+const DATA_DIR = __dirname.replace(/[^\/]*\/*$/, "data/");
 let cache;
-function all(option) {
-    const copyRow = row => row.slice();
-    let each = option.each;
-    let result;
-    const progress = option.progress;
-    const buffer = [];
-    if (!each) {
-        result = [];
-        each = row => result.push(row);
-    }
-    if (cache) {
-        return promisen.resolve()
-            .then(() => cache.forEach(row => each(copyRow(row))))
-            .then(() => result);
-    }
-    else {
-        return promisen.resolve()
-            .then(promisen.eachSeries(NAMES, it))
-            .then(() => cache = buffer)
-            .then(() => result);
-    }
-    function it(name) {
-        return loadFile(name)
-            .then(decodeCP932)
-            .then(parseCSV)
-            .then(rows => rows.forEach(row => {
+const copyRow = row => row.slice();
+function all(options) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!options)
+            options = {};
+        let each = options.each;
+        let result;
+        const progress = options.progress;
+        const buffer = [];
+        let idx = 0;
+        if (!each) {
+            result = [];
+            each = row => result.push(row);
+        }
+        if (!cache) {
+            // first time
+            yield next();
+            cache = buffer;
+        }
+        else {
+            // cache available
+            cache.forEach(row => each(copyRow(row)));
+        }
+        return result;
+        function next() {
+            return __awaiter(this, void 0, void 0, function* () {
+                const name = NAMES[idx++];
+                if (!name)
+                    return;
+                const binary = yield loadFile(name);
+                const data = iconv.decode(binary, "CP932");
+                data.split(/\r?\n/).forEach(eachLine);
+                return next();
+            });
+        }
+        function eachLine(line) {
+            const row = line.split(",").map(col => col.replace(/^"(.*)"$/, "$1"));
+            if (!(+row[0]))
+                return;
             buffer.push(row);
             each(copyRow(row));
-        }));
-    }
-    function loadFile(name) {
-        const endpoint = option.endpoint || ENDPOINT;
-        const suffix = option.suffix || CSV_SUFFIX;
-        const dir = option.tmpdir || TEMP_DIR;
-        const file = dir.replace(/\/*$/, "/") + name + suffix;
-        // check whether local cache file available
-        return access(file).then(fromLocal, fromRemote);
-        // read from local cache when unavailable
-        function fromLocal() {
-            if (progress)
-                progress("reading: " + file);
-            return readFile(file);
         }
-        // fetch from remote when cache unavailable
-        function fromRemote() {
-            const url = endpoint + name + CSV_SUFFIX;
-            if (progress)
-                progress("loading: " + url);
-            return fetchFile(url).then(data => {
-                return saveLocal(data).then(() => data);
-            });
-        }
-        function saveLocal(data) {
-            // check whether local cache directory exists
-            return access(dir).catch(() => {
+        function loadFile(name) {
+            const file = DATA_DIR + name + CSV_SUFFIX;
+            const url = ENDPOINT + name + CSV_SUFFIX;
+            // check whether local cache file available
+            return access(file).then(fromLocal, fromRemote);
+            // read from local cache
+            function fromLocal() {
                 if (progress)
-                    progress("mkdir: " + dir);
-                return mkdir(dir);
-            }).then(() => {
-                // save to local cache
-                progress("writing: " + file + " (" + data.length + " bytes)");
-                return writeFile(file, data);
-            });
+                    progress("reading: " + file);
+                return readFile(file);
+            }
+            // fetch from remote
+            function fromRemote() {
+                return __awaiter(this, void 0, void 0, function* () {
+                    // fetch CSV file from remote
+                    if (progress)
+                        progress("loading: " + url);
+                    const res = yield axios_1.default.get(url, { responseType: "arraybuffer" });
+                    const data = res.data;
+                    // check whether local cache directory exists
+                    yield access(DATA_DIR).catch(() => {
+                        if (progress)
+                            progress("mkdir: " + DATA_DIR);
+                        return mkdir(DATA_DIR);
+                    });
+                    // save to local cache file
+                    progress("writing: " + file + " (" + data.length + " bytes)");
+                    yield writeFile(file, data);
+                    return data;
+                });
+            }
         }
-    }
+    });
 }
 exports.all = all;
-/**
- * fetch CSV file from remote
- */
-function fetchFile(url) {
-    const req = {
-        method: "GET",
-        url: url,
-        responseType: "arraybuffer"
-    };
-    return axios_1.default(req).then(res => res.data);
-}
-/**
- * decode CP932
- */
-function decodeCP932(data) {
-    return iconv.decode(data, "CP932");
-}
-/**
- * parse CSV file
- */
-function parseCSV(data) {
-    return data.split(/\r?\n/)
-        .filter(line => !!line)
-        .map(line => line.split(",")
-        .map(col => col.replace(/^"(.*)"/, "$1")))
-        .filter(row => +row[0]);
-}
