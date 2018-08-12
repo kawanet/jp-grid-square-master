@@ -31,9 +31,10 @@
   },
   "scripts": {
     "fixpack": "fixpack",
+    "install": "node -e 'require(\".\").all({progress:console.warn})'",
     "test": "./node_modules/.bin/mocha test",
     "tsc": "./node_modules/.bin/tsc",
-    "tsc-declaration": "./node_modules/.bin/tsc --declaration --emitDeclarationOnly --outDir typings src/jp-grid-square-master.ts",
+    "tsc-typings": "./node_modules/.bin/tsc -p typings.json",
     "tsc-watch": "./node_modules/.bin/tsc --watch"
   },
   "typings": "typings/jp-grid-square-master.d.ts"
