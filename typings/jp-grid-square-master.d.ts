@@ -1,10 +1,7 @@
 declare type Row = string[];
-interface PaserOption {
+interface JGSMOptions {
     each?(row: Row): any;
-    endpoint?: string;
-    progress?(message: any): void;
-    suffix?: string;
-    tmpdir?: string;
+    progress?(message: any): any;
 }
-export declare function all(option?: PaserOption): Promise<Row[]>;
+export declare function all(options?: JGSMOptions): Promise<Row[]>;
 export {};

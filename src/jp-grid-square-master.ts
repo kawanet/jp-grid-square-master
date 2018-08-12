@@ -4,25 +4,14 @@ import axios from "axios"
 import * as fs from "fs"
 import * as iconv from "iconv-lite"
 import * as promisen from "promisen"
-import {tmpdir} from "os";
 
 type Row = string[];
 
-interface PaserOption
-{
+interface JGSMOptions {
 	each?(row: Row): any;
 
-	/// "http://www.stat.go.jp/data/mesh/csv/"
-	endpoint?: string;
-
 	/// console.warn
-	progress?(message: any): void;
-
-	/// ".csv"
-	suffix?: string;
-
-	/// os.tmpdir()
-	tmpdir?: string;
+	progress?(message: any): any;
 }
 
 const ENDPOINT = "http://www.stat.go.jp/data/mesh/csv/";
@@ -41,102 +30,86 @@ const writeFile = promisen.denodeify(fs.writeFile.bind(fs));
 const access = promisen.denodeify(fs.access.bind(fs));
 const mkdir = promisen.denodeify(fs.mkdir.bind(fs));
 
-const PKG_NAME = require("../package.json").name;
-const TEMP_DIR = tmpdir() + "/" + PKG_NAME;
+const DATA_DIR = __dirname.replace(/[^\/]*\/*$/, "data/")
 
 let cache: Row[];
 
-export function all(option?: PaserOption): Promise<Row[]> {
-	const copyRow = row => row.slice();
-	let each = option.each;
+const copyRow = row => row.slice();
+
+export async function all(options?: JGSMOptions): Promise<Row[]> {
+	if (!options) options = {};
+	let each = options.each;
 	let result: Row[];
-	const progress = option.progress;
+	const progress = options.progress;
 	const buffer: Row[] = [];
+	let idx = 0;
 
 	if (!each) {
 		result = [];
 		each = row => result.push(row);
 	}
 
-	if (cache) {
-		return promisen.resolve()
-			.then(() => cache.forEach(row => each(copyRow(row))))
-			.then(() => result);
+	if (!cache) {
+		// first time
+		await next();
+		cache = buffer;
 	} else {
-		return promisen.resolve()
-			.then(promisen.eachSeries(NAMES, it))
-			.then(() => cache = buffer)
-			.then(() => result);
+		// cache available
+		cache.forEach(row => each(copyRow(row)));
 	}
 
-	function it(name: string) {
-		return loadFile(name)
-			.then(decodeCP932)
-			.then(parseCSV)
-			.then(rows => rows.forEach(row => {
-				buffer.push(row);
-				each(copyRow(row));
-			}));
+	return result;
+
+	async function next() {
+		const name = NAMES[idx++];
+		if (!name) return;
+		await parseFile(name);
+		return next();
+	}
+
+	async function parseFile(name: string) {
+		const binary = await loadFile(name);
+		const data = iconv.decode(binary, "CP932");
+		const rows = parseCSV(data);
+		rows.forEach(row => {
+			buffer.push(row);
+			each(copyRow(row));
+		});
 	}
 
 	function loadFile(name: string) {
-		const endpoint = option.endpoint || ENDPOINT;
-		const suffix = option.suffix || CSV_SUFFIX;
-		const dir = option.tmpdir || TEMP_DIR;
-		const file = dir.replace(/\/*$/, "/") + name + suffix;
+		const file = DATA_DIR + name + CSV_SUFFIX;
+		const url = ENDPOINT + name + CSV_SUFFIX;
 
 		// check whether local cache file available
 		return access(file).then(fromLocal, fromRemote);
 
-		// read from local cache when unavailable
+		// read from local cache
 		function fromLocal() {
 			if (progress) progress("reading: " + file);
 			return readFile(file);
 		}
 
-		// fetch from remote when cache unavailable
-		function fromRemote() {
-			const url = endpoint + name + CSV_SUFFIX;
+		// fetch from remote
+		async function fromRemote() {
+			// fetch CSV file from remote
 			if (progress) progress("loading: " + url);
-			return fetchFile(url).then(data => {
-				return saveLocal(data).then(() => data);
-			});
-		}
+			const res = await axios.get(url, {responseType: "arraybuffer"});
+			const data = res.data;
 
-		function saveLocal(data) {
 			// check whether local cache directory exists
-			return access(dir).catch(() => {
-				if (progress) progress("mkdir: " + dir);
-				return mkdir(dir);
-			}).then(() => {
-				// save to local cache
-				progress("writing: " + file + " (" + data.length + " bytes)");
-				return writeFile(file, data);
+			await access(DATA_DIR).catch(() => {
+				if (progress) progress("mkdir: " + DATA_DIR);
+				return mkdir(DATA_DIR);
 			});
+
+			// save to local cache file
+			progress("writing: " + file + " (" + data.length + " bytes)");
+			await writeFile(file, data);
+
+			return data;
 		}
 	}
-}
-
-/**
- * fetch CSV file from remote
- */
-
-function fetchFile(url: string) {
-	const req = {
-		method: "GET",
-		url: url,
-		responseType: "arraybuffer"
-	};
-
-	return axios(req).then(res => res.data);
-}
-
-/**
- * decode CP932
- */
-
-function decodeCP932(data): string {
-	return iconv.decode(data, "CP932");
 }
 
 /**
