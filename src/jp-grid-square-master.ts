@@ -63,18 +63,17 @@ export async function all(options?: JGSMOptions): Promise<Row[]> {
 	async function next() {
 		const name = NAMES[idx++];
 		if (!name) return;
-		await parseFile(name);
+		const binary = await loadFile(name);
+		const data = iconv.decode(binary, "CP932");
+		data.split(/\r?\n/).forEach(eachLine);
 		return next();
 	}
 
-	async function parseFile(name: string) {
-		const binary = await loadFile(name);
-		const data = iconv.decode(binary, "CP932");
-		const rows = parseCSV(data);
-		rows.forEach(row => {
-			buffer.push(row);
-			each(copyRow(row));
-		});
+	function eachLine(line: string) {
+		const row: Row = line.split(",").map(col => col.replace(/^"(.*)"$/, "$1"));
+		if (!(+row[0])) return;
+		buffer.push(row);
+		each(copyRow(row));
 	}
 
 	function loadFile(name: string) {
@@ -110,16 +109,4 @@ export async function all(options?: JGSMOptions): Promise<Row[]> {
 			return data;
 		}
 	}
-}
-
-/**
- * parse CSV file
- */
-
-function parseCSV(data: string): Row[] {
-	return data.split(/\r?\n/)
-		.filter(line => !!line)
-		.map(line => line.split(",")
-			.map(col => col.replace(/^"(.*)"/, "$1")) as Row)
-		.filter(row => +row[0]);
 }
