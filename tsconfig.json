@@ -1,12 +1,19 @@
 {
   "include": [
-    "src/*.ts",
-    "test/*.ts"
+    "src",
+    "test"
   ],
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "CommonJS",
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "removeComments": false,
-    "target": "ES6",
+    "skipLibCheck": false,
+    "strictNullChecks": false,
+    "target": "ES2018",
     "types": [
       "mocha",
       "node"

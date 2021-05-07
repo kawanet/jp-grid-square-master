@@ -1,7 +1,13 @@
+*.tgz
 *~
 .DS_Store
 .Thumbs
 ._*
 .idea
+.vscode
 node_modules
 npm-debug.log*
+package-lock.json
+src/**/*.js
+test/**/*.js
+~$*

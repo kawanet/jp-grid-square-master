@@ -1,6 +1,7 @@
 # Japan Basic Grid Square Master CSV Data Parser
 
-[![Build Status](https://travis-ci.org/kawanet/jp-grid-square-master.svg?branch=master)](https://travis-ci.org/kawanet/jp-grid-square-master) [![npm version](https://badge.fury.io/js/jp-grid-square-master.svg)](https://badge.fury.io/js/jp-grid-square-master)
+[![Node.js CI](https://github.com/kawanet/jp-grid-square-master/workflows/Node.js%20CI/badge.svg?branch=master)](https://github.com/kawanet/jp-grid-square-master/actions/)
+[![npm version](https://badge.fury.io/js/jp-grid-square-master.svg)](https://badge.fury.io/js/jp-grid-square-master)
 
 ### Synopsis
 
@@ -9,11 +10,12 @@ const GridMaster = require("jp-grid-square-master");
 
 const option = {progress: console.warn};
 
-GridMaster.all(option).then(function(rows) {
-    rows.forEach(function(row) {
+GridMaster.all(option).then(rows => {
+    rows.slice(0, 10).forEach(row => {
         const city = row[0];
         const name = row[1];
         const mesh = row[2];
+        console.warn(city, name, mesh);
         // do something
     });
 });
@@ -51,18 +53,19 @@ GridMaster.all({
 
 ### GitHub
 
-- [https://github.com/kawanet/jp-grid-square-master](https://github.com/kawanet/jp-grid-square-master)
+- https://github.com/kawanet/jp-grid-square-master
 
 ### See Also
 
-- [http://www.stat.go.jp/english/data/mesh/05-1s.html](http://www.stat.go.jp/english/data/mesh/05-1s.html)
-- [http://www.stat.go.jp/data/mesh/m_itiran.html](http://www.stat.go.jp/data/mesh/m_itiran.html)
-- [http://kikakurui.com/x0/X0402-2010-01.html](http://kikakurui.com/x0/X0402-2010-01.html)
-- [https://github.com/kawanet/jp-pref-lookup](https://github.com/kawanet/jp-pref-lookup)
+- https://www.stat.go.jp/english/data/mesh/05-1s.html
+- https://www.stat.go.jp/data/mesh/m_itiran.html
+- https://kikakurui.com/x0/X0402-2010-01.html
+- https://github.com/jp-mirror/jp-data-mesh-csv
+- https://github.com/kawanet/jp-pref-lookup
 
 ### The MIT License (MIT)
 
-Copyright (c) 2018 Yusuke Kawasaki
+Copyright (c) 2018-2021 Yusuke Kawasaki
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

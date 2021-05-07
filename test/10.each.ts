@@ -1,14 +1,14 @@
-"use strict";
+#!/usr/bin/env mocha -R spec
 
-import {all} from "../src/jp-grid-square-master";
+import {strict as assert} from "assert";
+import {all} from "../";
 
-const assert = require("assert");
 const FILE = __filename.split("/").pop();
 
 describe(FILE, () => {
 	let totalRows = 0;
 
-	const isValid = row => (+row[0] && +row[2]);
+	const isValid = (row: string[]) => (+row[0] && +row[2]);
 
 	it("each first time", function () {
 		this.timeout(600000);
@@ -25,15 +25,15 @@ describe(FILE, () => {
 
 		const option = {progress: console.warn, each: each};
 		return all(option).then(rows => {
-			assert(!rows, "result should not be returned when each() given");
-			assert(totalRows);
-			assert.strictEqual(validRows, totalRows);
+			assert.ok(!rows, "result should not be returned when each() given");
+			assert.ok(totalRows);
+			assert.equal(validRows, totalRows);
 		});
 	});
 
 	it("each second time", function () {
 		let validRows = 0;
-		const prefIndex = {};
+		const prefIndex = {} as { [id: string]: number };
 		const each = (row: string[]) => {
 			if (isValid(row)) validRows++;
 
@@ -45,9 +45,9 @@ describe(FILE, () => {
 
 		const option = {progress: console.warn, each: each};
 		return all(option).then(rows => {
-			assert(!rows, "result should not be returned when each() given");
-			assert.strictEqual(validRows, totalRows);
-			assert.strictEqual(Object.keys(prefIndex).length, 47);
+			assert.ok(!rows, "result should not be returned when each() given");
+			assert.equal(validRows, totalRows);
+			assert.equal(Object.keys(prefIndex).length, 47);
 		});
 	});
 });
