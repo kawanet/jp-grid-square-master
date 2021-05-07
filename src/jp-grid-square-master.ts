@@ -1,18 +1,16 @@
-// parser.ts
+/**
+ * Japan Basic Grid Square Master CSV Data Parser
+ *
+ * @see https://github.com/kawanet/jp-grid-square-master
+ */
 
 import axios from "axios"
 import * as fs from "fs"
 import * as iconv from "iconv-lite"
 import * as promisen from "promisen"
+import {JGSMOptions} from "../typings/jp-grid-square-master";
 
 type Row = string[];
-
-interface JGSMOptions {
-	each?(row: Row): any;
-
-	/// console.warn
-	progress?(message: any): any;
-}
 
 const ENDPOINT = "http://www.stat.go.jp/data/mesh/csv/";
 const CSV_SUFFIX = ".csv";

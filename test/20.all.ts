@@ -1,8 +1,8 @@
-"use strict";
+#!/usr/bin/env mocha -R spec
 
-import {all} from "../src/jp-grid-square-master";
+import {strict as assert} from "assert";
+import {all} from "../";
 
-const assert = require("assert");
 const FILE = __filename.split("/").pop();
 
 describe(FILE, () => {
