@@ -37,9 +37,9 @@
     "url": "git+https://github.com/kawanet/jp-grid-square-master.git"
   },
   "scripts": {
-    "build": "./node_modules/.bin/tsc",
+    "build": "[ ! -f src/jp-grid-square-master.ts ] || ./node_modules/.bin/tsc",
     "fixpack": "fixpack",
-    "install": "node -e 'require(\".\").all({progress:console.warn})'",
+    "install": "npm run build && node -e 'require(\".\").all({progress:console.warn})'",
     "prepack": "npm run build && npm test",
     "test": "./node_modules/.bin/mocha test",
     "tsc-watch": "./node_modules/.bin/tsc --watch"
