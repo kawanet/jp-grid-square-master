@@ -60,6 +60,7 @@ GridMaster.all({
 - https://www.stat.go.jp/english/data/mesh/05-1s.html
 - https://www.stat.go.jp/data/mesh/m_itiran.html
 - https://kikakurui.com/x0/X0402-2010-01.html
+- https://github.com/jp-mirror/jp-data-mesh-csv
 - https://github.com/kawanet/jp-pref-lookup
 
 ### The MIT License (MIT)

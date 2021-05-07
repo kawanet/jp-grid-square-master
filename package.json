@@ -7,8 +7,8 @@
     "url": "https://github.com/kawanet/jp-grid-square-master/issues"
   },
   "dependencies": {
-    "axios": "^0.21.1",
-    "iconv-lite": "^0.6.2"
+    "iconv-lite": "^0.6.2",
+    "jp-data-mesh-csv": "^0.2.1"
   },
   "devDependencies": {
     "@types/mocha": "^8.2.2",
@@ -19,7 +19,6 @@
   "files": [
     "LICENSE",
     "README.md",
-    "data/.gitignore",
     "src/*.js",
     "typings/*.d.ts"
   ],
@@ -37,9 +36,8 @@
     "url": "git+https://github.com/kawanet/jp-grid-square-master.git"
   },
   "scripts": {
-    "build": "[ ! -f src/jp-grid-square-master.ts ] || ./node_modules/.bin/tsc",
+    "build": "./node_modules/.bin/tsc",
     "fixpack": "fixpack",
-    "install": "npm run build && node -e 'require(\".\").all({progress:console.warn})'",
     "prepack": "npm run build && npm test",
     "test": "./node_modules/.bin/mocha test",
     "tsc-watch": "./node_modules/.bin/tsc --watch"
