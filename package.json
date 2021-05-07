@@ -17,6 +17,13 @@
     "mocha": "^5.2.0",
     "typescript": "^3.0.1"
   },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "data/.gitignore",
+    "src/*.js",
+    "typings/*.d.ts"
+  ],
   "homepage": "https://github.com/kawanet/jp-grid-square-master#readme",
   "keywords": [
     "JIS-X-0402",
@@ -31,10 +38,11 @@
     "url": "git+https://github.com/kawanet/jp-grid-square-master.git"
   },
   "scripts": {
+    "build": "./node_modules/.bin/tsc",
     "fixpack": "fixpack",
     "install": "node -e 'require(\".\").all({progress:console.warn})'",
+    "prepack": "npm run build && npm test",
     "test": "./node_modules/.bin/mocha test",
-    "tsc": "./node_modules/.bin/tsc",
     "tsc-typings": "./node_modules/.bin/tsc -p typings.json",
     "tsc-watch": "./node_modules/.bin/tsc --watch"
   },
