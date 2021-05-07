@@ -15,12 +15,12 @@ describe(FILE, () => {
 
 		const option = {progress: console.warn};
 		return all(option).then(rows => {
-			assert(rows, "all() should return rows when each not given");
+			assert.ok(rows, "all() should return rows when each not given");
 
 			totalRows = rows.length;
-			assert(totalRows);
+			assert.ok(totalRows);
 
-			assert.strictEqual(rows.filter(isValid).length, totalRows);
+			assert.equal(rows.filter(isValid).length, totalRows);
 
 			// break
 			rows.shift();
@@ -32,11 +32,11 @@ describe(FILE, () => {
 	it("all() second time", function () {
 		const option = {progress: console.warn};
 		return all(option).then(rows => {
-			assert(rows, "all() should return rows when each not given");
+			assert.ok(rows, "all() should return rows when each not given");
 
-			assert.strictEqual(rows.length, totalRows);
+			assert.equal(rows.length, totalRows);
 
-			assert.strictEqual(rows.filter(isValid).length, totalRows);
+			assert.equal(rows.filter(isValid).length, totalRows);
 		});
 	});
 });

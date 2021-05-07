@@ -25,9 +25,9 @@ describe(FILE, () => {
 
 		const option = {progress: console.warn, each: each};
 		return all(option).then(rows => {
-			assert(!rows, "result should not be returned when each() given");
-			assert(totalRows);
-			assert.strictEqual(validRows, totalRows);
+			assert.ok(!rows, "result should not be returned when each() given");
+			assert.ok(totalRows);
+			assert.equal(validRows, totalRows);
 		});
 	});
 
@@ -45,9 +45,9 @@ describe(FILE, () => {
 
 		const option = {progress: console.warn, each: each};
 		return all(option).then(rows => {
-			assert(!rows, "result should not be returned when each() given");
-			assert.strictEqual(validRows, totalRows);
-			assert.strictEqual(Object.keys(prefIndex).length, 47);
+			assert.ok(!rows, "result should not be returned when each() given");
+			assert.equal(validRows, totalRows);
+			assert.equal(Object.keys(prefIndex).length, 47);
 		});
 	});
 });
