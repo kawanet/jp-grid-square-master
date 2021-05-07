@@ -6,9 +6,9 @@ import {all} from "../";
 const FILE = __filename.split("/").pop();
 
 describe(FILE, () => {
-	let totalRows;
+	let totalRows: number;
 
-	const isValid = row => (+row[0] && +row[2]);
+	const isValid = (row: string[]) => (+row[0] && +row[2]);
 
 	it("all() first time", function () {
 		this.timeout(600000);

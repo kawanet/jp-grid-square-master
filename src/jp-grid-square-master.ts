@@ -26,13 +26,13 @@ const DATA_DIR = __dirname.replace(/[^\/]*\/*$/, "data/")
 
 let cache: Row[];
 
-const copyRow = row => row.slice();
+const copyRow = <T>(row: T[]) => row.slice();
 
 export async function all(options?: JGSMOptions): Promise<Row[]> {
 	if (!options) options = {};
-	let each = options.each;
+	let {each} = options;
 	let result: Row[];
-	const progress = options.progress;
+	const {progress} = options;
 	const buffer: Row[] = [];
 	let idx = 0;
 
@@ -52,7 +52,7 @@ export async function all(options?: JGSMOptions): Promise<Row[]> {
 
 	return result;
 
-	async function next() {
+	async function next(): Promise<void> {
 		const name = NAMES[idx++];
 		if (!name) return;
 		const binary = await loadFile(name);
@@ -61,7 +61,7 @@ export async function all(options?: JGSMOptions): Promise<Row[]> {
 		return next();
 	}
 
-	function eachLine(line: string) {
+	function eachLine(line: string): void {
 		const row: Row = line.split(",").map(col => col.replace(/^"(.*)"$/, "$1"));
 		if (!(+row[0])) return;
 		buffer.push(row);
@@ -76,17 +76,17 @@ export async function all(options?: JGSMOptions): Promise<Row[]> {
 		return fs.access(file).then(fromLocal, fromRemote);
 
 		// read from local cache
-		function fromLocal() {
+		function fromLocal(): Promise<Buffer> {
 			if (progress) progress("reading: " + file);
 			return fs.readFile(file);
 		}
 
 		// fetch from remote
-		async function fromRemote() {
+		async function fromRemote(): Promise<Buffer> {
 			// fetch CSV file from remote
 			if (progress) progress("loading: " + url);
-			const res = await axios.get(url, {responseType: "arraybuffer"});
-			const data = res.data;
+			const res = await axios.get<ArrayBuffer>(url, {responseType: "arraybuffer"});
+			const data = Buffer.from(res.data);
 
 			// check whether local cache directory exists
 			await fs.access(DATA_DIR).catch(() => {
@@ -95,7 +95,7 @@ export async function all(options?: JGSMOptions): Promise<Row[]> {
 			});
 
 			// save to local cache file
-			progress("writing: " + file + " (" + data.length + " bytes)");
+			if (progress) progress("writing: " + file + " (" + data.length + " bytes)");
 			await fs.writeFile(file, data);
 
 			return data;

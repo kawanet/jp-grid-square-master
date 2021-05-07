@@ -8,7 +8,7 @@ const FILE = __filename.split("/").pop();
 describe(FILE, () => {
 	let totalRows = 0;
 
-	const isValid = row => (+row[0] && +row[2]);
+	const isValid = (row: string[]) => (+row[0] && +row[2]);
 
 	it("each first time", function () {
 		this.timeout(600000);
@@ -33,7 +33,7 @@ describe(FILE, () => {
 
 	it("each second time", function () {
 		let validRows = 0;
-		const prefIndex = {};
+		const prefIndex = {} as { [id: string]: number };
 		const each = (row: string[]) => {
 			if (isValid(row)) validRows++;
 
