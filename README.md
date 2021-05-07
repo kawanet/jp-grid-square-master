@@ -1,6 +1,7 @@
 # Japan Basic Grid Square Master CSV Data Parser
 
-[![Build Status](https://travis-ci.org/kawanet/jp-grid-square-master.svg?branch=master)](https://travis-ci.org/kawanet/jp-grid-square-master) [![npm version](https://badge.fury.io/js/jp-grid-square-master.svg)](https://badge.fury.io/js/jp-grid-square-master)
+[![Node.js CI](https://github.com/kawanet/jp-grid-square-master/workflows/Node.js%20CI/badge.svg?branch=master)](https://github.com/kawanet/jp-grid-square-master/actions/)
+[![npm version](https://badge.fury.io/js/jp-grid-square-master.svg)](https://badge.fury.io/js/jp-grid-square-master)
 
 ### Synopsis
 
