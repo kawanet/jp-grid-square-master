@@ -5,10 +5,9 @@
  */
 
 import axios from "axios"
-import * as fs from "fs"
+import {promises as fs} from "fs"
 import * as iconv from "iconv-lite"
-import * as promisen from "promisen"
-import {JGSMOptions} from "../typings/jp-grid-square-master";
+import {JGSMOptions} from "../";
 
 type Row = string[];
 
@@ -22,11 +21,6 @@ const NAMES = [
 	"30", "31", "32", "33", "34", "35", "36", "37", "38", "39",
 	"40", "41", "42", "43", "44", "45", "46", "47"
 ];
-
-const readFile = promisen.denodeify(fs.readFile.bind(fs));
-const writeFile = promisen.denodeify(fs.writeFile.bind(fs));
-const access = promisen.denodeify(fs.access.bind(fs));
-const mkdir = promisen.denodeify(fs.mkdir.bind(fs));
 
 const DATA_DIR = __dirname.replace(/[^\/]*\/*$/, "data/")
 
@@ -79,12 +73,12 @@ export async function all(options?: JGSMOptions): Promise<Row[]> {
 		const url = ENDPOINT + name + CSV_SUFFIX;
 
 		// check whether local cache file available
-		return access(file).then(fromLocal, fromRemote);
+		return fs.access(file).then(fromLocal, fromRemote);
 
 		// read from local cache
 		function fromLocal() {
 			if (progress) progress("reading: " + file);
-			return readFile(file);
+			return fs.readFile(file);
 		}
 
 		// fetch from remote
@@ -95,14 +89,14 @@ export async function all(options?: JGSMOptions): Promise<Row[]> {
 			const data = res.data;
 
 			// check whether local cache directory exists
-			await access(DATA_DIR).catch(() => {
+			await fs.access(DATA_DIR).catch(() => {
 				if (progress) progress("mkdir: " + DATA_DIR);
-				return mkdir(DATA_DIR);
+				return fs.mkdir(DATA_DIR);
 			});
 
 			// save to local cache file
 			progress("writing: " + file + " (" + data.length + " bytes)");
-			await writeFile(file, data);
+			await fs.writeFile(file, data);
 
 			return data;
 		}
