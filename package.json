@@ -1,13 +1,13 @@
 {
   "name": "jp-grid-square-master",
   "description": "Japan Basic Grid Square Master CSV Data Parser",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "author": "@kawanet",
   "bugs": {
     "url": "https://github.com/kawanet/jp-grid-square-master/issues"
   },
   "dependencies": {
-    "iconv-lite": "^0.6.2",
+    "iconv-cp932": "^1.1.0",
     "jp-data-mesh-csv": "^0.2.1"
   },
   "devDependencies": {

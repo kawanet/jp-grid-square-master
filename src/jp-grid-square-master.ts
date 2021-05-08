@@ -5,7 +5,7 @@
  */
 
 import {promises as fs} from "fs"
-import * as iconv from "iconv-lite"
+import * as iconv from "iconv-cp932"
 import {dirname, files} from "jp-data-mesh-csv";
 
 import {JGSMOptions} from "../";
@@ -44,7 +44,7 @@ export async function all(options?: JGSMOptions): Promise<Row[]> {
             const file = `${dirname}/${name}`;
             if (progress) progress("reading: " + file);
             const binary = await fs.readFile(file);
-            const data = iconv.decode(binary, "CP932");
+            const data = iconv.decode(binary);
             data.split(/\r?\n/).forEach(eachLine);
         }
     }
