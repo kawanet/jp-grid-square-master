@@ -1,14 +1,14 @@
 #!/usr/bin/env mocha -R spec
 
 import {strict as assert} from "assert";
-import {all} from "../";
+import {all, JGSMColumns as C} from "../";
 
 const FILE = __filename.split("/").pop();
 
 describe(FILE, () => {
 	let totalRows = 0;
 
-	const isValid = (row: string[]) => (+row[0] && +row[2]);
+	const isValid = (row: string[]) => (+row[C.都道府県市区町村コード] && +row[C.基準メッシュコード]);
 
 	it("each first time", function () {
 		this.timeout(600000);
@@ -37,7 +37,7 @@ describe(FILE, () => {
 		const each = (row: string[]) => {
 			if (isValid(row)) validRows++;
 
-			prefIndex[((+row[0]) / 1000) | 0] = 1;
+			prefIndex[((+row[C.都道府県市区町村コード]) / 1000) | 0] = 1;
 
 			// break
 			row.shift();

@@ -21,6 +21,10 @@ GridMaster.all(option).then(rows => {
 });
 ```
 
+See TypeScript declaration
+[jp-grid-square-master.d.ts](https://github.com/kawanet/jp-grid-square-master/blob/master/typings/jp-grid-square-master.d.ts)
+for more details.
+
 ### Format
 
 `all()` method returns `string[][]` which contains the following table:
@@ -40,10 +44,10 @@ GridMaster.all(option).then(rows => {
 
 ### Row-by-Row
 
-`all()` method accepts `each` option to execute for each row.
+`all()` method accepts `each` option to execute something for each row.
 
 ```js
-GridMaster.all({
+await GridMaster.all({
     progress: console.warn,
     each: ([city, name, mesh]) => {
         // do something

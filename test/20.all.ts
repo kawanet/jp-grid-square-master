@@ -1,14 +1,14 @@
 #!/usr/bin/env mocha -R spec
 
 import {strict as assert} from "assert";
-import {all} from "../";
+import {all, JGSMColumns as C} from "../";
 
 const FILE = __filename.split("/").pop();
 
 describe(FILE, () => {
     let totalRows: number;
 
-    const isValid = (row: string[]) => (+row[0] && +row[2]);
+    const isValid = (row: string[]) => (+row[C.都道府県市区町村コード] && +row[C.基準メッシュコード]);
 
     it("all() first time", function () {
         this.timeout(600000);

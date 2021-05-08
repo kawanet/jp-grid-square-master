@@ -8,7 +8,7 @@ import {promises as fs} from "fs"
 import * as iconv from "iconv-cp932"
 import {dirname, files} from "jp-data-mesh-csv";
 
-import {JGSMOptions} from "../";
+import {JGSMColumns as C, JGSMOptions} from "../";
 
 type Row = string[];
 
@@ -51,7 +51,7 @@ export async function all(options?: JGSMOptions): Promise<Row[]> {
 
     function eachLine(line: string): void {
         const row: Row = line.split(",").map(col => col.replace(/^"(.*)"$/, "$1"));
-        if (!(+row[0])) return;
+        if (!(+row[C.都道府県市区町村コード])) return;
         buffer.push(row);
         each(copyRow(row));
     }
