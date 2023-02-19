@@ -7,8 +7,8 @@
     "url": "https://github.com/kawanet/jp-grid-square-master/issues"
   },
   "dependencies": {
-    "jp-data-mesh-csv": "0.2.1"
     "iconv-cp932": "^1.1.0",
+    "jp-data-mesh-csv": "^0.2.2"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.1",
